@@ -1,43 +1,40 @@
 // Copyright 2021 NNTU-CS
 #include "train.h"
-#include <stdexcept>
-
-Train::Train(): entry(nullptr), countOp(0) {}
+Train::Train(): first(nullptr), countOp(0) {}
 
 Train::~Train() {
-    if (!entry) return;
-    // удалить все вагоны
-    Car* cur = entry->next;
-    while (cur != entry) {
+    if (!first) return;
+    // удаляем все вагоны
+    Car* cur = first->next;
+    while (cur != first) {
         Car* next = cur->next;
         delete cur;
         cur = next;
     }
-    delete entry;
+    delete first;
 }
 
 void Train::addCar(bool light) {
-    Car* car = new Car(light);
-    if (!entry) {
-        entry = car;
-        entry->next = entry;
-        entry->prev = entry;
+    Car* car = new Car();
+    car->light = light;
+    if (!first) {
+        first = car;
+        first->next = first;
+        first->prev = first;
     } else {
-        Car* tail = entry->prev;
+        Car* tail = first->prev;
         tail->next = car;
         car->prev = tail;
-        car->next = entry;
-        entry->prev = car;
+        car->next = first;
+        first->prev = car;
     }
 }
 
 int Train::getLength() {
-    if (!entry) return 0;
-    // простой алгоритм: идти по кругу до возвращения в entry, считая
+    if (!first) return 0;
     int n = 1;
-    Car* cur = entry->next;
-    // каждый переход ++countOp
-    while (cur != entry) {
+    Car* cur = first->next;
+    while (cur != first) {
         countOp++;
         n++;
         cur = cur->next;
@@ -45,6 +42,6 @@ int Train::getLength() {
     return n;
 }
 
-int Train::getOpCount() const {
+int Train::getOpCount() {
     return countOp;
 }
