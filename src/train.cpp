@@ -1,47 +1,70 @@
 // Copyright 2021 NNTU-CS
 #include "train.h"
-Train::Train(): first(nullptr), countOp(0) {}
+
+Train::Train() : start(nullptr), size(0), countOp(0) {}
 
 Train::~Train() {
-    if (!first) return;
-    // удаляем все вагоны
-    Car* cur = first->next;
-    while (cur != first) {
-        Car* next = cur->next;
+    clear();
+}
+
+void Train::clear() {
+    if (!start) return;
+    Car* cur = start;
+    size_t n = size;
+    while (n-- > 0) {
+        Car* nextCar = cur->next;
         delete cur;
-        cur = next;
+        cur = nextCar;
     }
-    delete first;
+    start = nullptr;
+    size = 0;
 }
 
 void Train::addCar(bool light) {
-    Car* car = new Car();
-    car->light = light;
-    if (!first) {
-        first = car;
-        first->next = first;
-        first->prev = first;
+    Car* car = new Car(light);
+    if (!start) {
+        start = car;
+        car->next = car;
+        car->prev = car;
+        size = 1;
     } else {
-        Car* tail = first->prev;
-        tail->next = car;
-        car->prev = tail;
-        car->next = first;
-        first->prev = car;
+        Car* last = start->prev;
+        last->next = car;
+        car->prev = last;
+        car->next = start;
+        start->prev = car;
+        size++;
     }
 }
 
-int Train::getLength() {
-    if (!first) return 0;
-    int n = 1;
-    Car* cur = first->next;
-    while (cur != first) {
-        countOp++;
-        n++;
-        cur = cur->next;
+size_t Train::getLength() {
+    if (!start) return 0;
+    countOp = 0;
+    if (!start->light) {
+        start->light = true;
     }
-    return n;
+    while (true) {
+        Car* current = start;
+        size_t steps_forward = 0;
+        do {
+            current = current->next;
+            countOp++;
+            steps_forward++;
+            if (current->light) {
+                current->light = false;
+                for (size_t i = 0; i < steps_forward; ++i) {
+                    current = current->prev;
+                    countOp++;
+                }
+                if (!current->light) {
+                    return steps_forward;
+                }
+                break;
+            }
+        } while (current != start);
+    }
 }
 
-int Train::getOpCount() {
+unsigned long long Train::getOpCount() const {
     return countOp;
 }
