@@ -2,19 +2,31 @@
 #ifndef INCLUDE_TRAIN_H_
 #define INCLUDE_TRAIN_H_
 
+#include <cstdint>
+
 class Train {
  private:
   struct Car {
-    bool light; // состояние лампочки
-    Car *next;
-    Car *prev;
+    bool light;
+    Car* next;
+    Car* prev;
+
+    // Конструктор с параметром по умолчанию
+    explicit Car(bool l = false) : light(l), next(this), prev(this) {}
   };
-  int countOp; // счетчик шагов (число переходов из вагона в вагон)
-  Car *first; // точка входа в поезд (первый вагон)
+
+  Car* first;
+  int64_t countOp;
+
  public:
   Train();
-  void addCar(bool light); // добавить вагон с начальным состоянием лампочки
-  int getLength();          // вычислить длину поезда
-  int getOpCount();         // вернуть число переходов (из вагона в вагон)
+  ~Train();
+
+  void addCar(bool light);
+
+  int64_t getLength();
+
+  int64_t getOpCount() const { return countOp; }
 };
+
 #endif  // INCLUDE_TRAIN_H_
