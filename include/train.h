@@ -6,14 +6,16 @@ private:
         bool light;
         Car* next;
         Car* prev;
+        Car(bool state = false) : light(state), next(nullptr), prev(nullptr) {}
     };
-    Car* first;      // точка входа в поезд
-    int countOp;     // счетчик переходов
+    Car* start;
+    size_t size;
+    unsigned long long countOp;
 public:
     Train();
     ~Train();
     void addCar(bool light);
-    int getLength();    // вычислить длину поезда
-    int getOpCount();   // вернуть число переходов
+    size_t getLength();
+    unsigned long long getOpCount() const;
+    void clear();
 };
-
